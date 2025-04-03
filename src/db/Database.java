@@ -5,11 +5,11 @@ import db.exception.EntityNotFoundException;
 import java.util.ArrayList;
 
 public class Database {
-    private static ArrayList<Entity> entities;
+    private static ArrayList<Entity> entities = new ArrayList<>();
 
     public static void add(Entity e) {
         entities.add(e);
-        e.id = entities.size() + 1;
+        e.id = entities.size();
     }
 
     public static Entity get(int id) throws EntityNotFoundException {

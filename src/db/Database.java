@@ -3,6 +3,7 @@ package db;
 import db.exception.EntityNotFoundException;
 import db.exception.InvalidEntityException;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

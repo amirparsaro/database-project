@@ -5,7 +5,9 @@ import db.*;
 public class Step extends Entity {
     @Override
     public Entity copy() {
-        return null;
+        Step copy = new Step(this.title, this.status, this.taskRef);
+        copy.id = this.id;
+        return copy;
     }
 
     @Override

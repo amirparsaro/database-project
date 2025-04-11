@@ -5,11 +5,13 @@ import db.*;
 import java.util.Date;
 
 public class Task extends Entity implements Trackable {
-    private static final int ENTITY_TASK_ID = 1;
+    private static final int ENTITY_TASK_ID = 1001;
 
     @Override
     public Entity copy() {
-        return null;
+        Task copy = new Task(this.title, this.description, this.dueDate, this.status);
+        copy.id = this.id;
+        return copy;
     }
 
     @Override

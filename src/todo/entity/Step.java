@@ -20,7 +20,7 @@ public class Step extends Entity {
     }
 
     enum Status {
-        NotStatred,
+        NotStarted,
         Completed
     }
 

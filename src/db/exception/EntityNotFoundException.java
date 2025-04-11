@@ -1,11 +1,11 @@
 package db.exception;
 
 public class EntityNotFoundException extends RuntimeException {
-    EntityNotFoundException() {
+    public EntityNotFoundException() {
         super("Cannot find entity.");
     }
 
-    EntityNotFoundException(String message) {
+    public EntityNotFoundException(String message) {
         super(message);
     }
 

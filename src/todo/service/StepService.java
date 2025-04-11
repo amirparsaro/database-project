@@ -11,6 +11,11 @@ import java.util.Date;
 
 public class StepService {
     public static void saveStep(int taskRef, String title) throws InvalidEntityException {
+        Entity entity = Database.get(taskRef);
+        if (!(entity instanceof Task)) {
+            throw new InvalidEntityException("Entity is not an instance of Task.");
+        }
+
         Step newStep = new Step(title, Step.Status.NotStarted, taskRef);
 
         Database.add(newStep);
@@ -30,6 +35,22 @@ public class StepService {
         if (field.equals("title")) {
             oldValue = step.title;
             step.title = newValue;
+        } else if (field.equals("status")) {
+            oldValue = String.valueOf(step.status);
+            Task task = (Task) Database.get(step.taskRef);
+            if (newValue.equals("NotStarted")) {
+                step.status = Step.Status.NotStarted;
+            } else if (newValue.equals("Completed")) {
+                step.status = Step.Status.Completed;
+                Entity taskEntity = Database.get(step.taskRef);
+                if (!(taskEntity instanceof Task)) {
+                    throw new InvalidEntityException("Entity is not an instance of Task.");
+                }
+
+                TaskService.setAsCompleted(taskEntity.id);
+            } else {
+                throw new IllegalArgumentException("Unknown status detected.");
+            }
         } else {
             throw new IllegalArgumentException("Unknown field detected.");
         }
@@ -38,4 +59,5 @@ public class StepService {
 
         return oldValue;
     }
+
 }

@@ -107,4 +107,17 @@ public class TaskService {
                     "        Status: " + step.status);
         }
     }
+
+    public static void getAllTasks() throws InvalidEntityException {
+        Task taskUsedForId = new Task();
+        ArrayList<Entity> allTasks = Database.getAll(taskUsedForId.getEntityCode());
+
+        for (Entity entity : allTasks) {
+            if (!(entity instanceof Task)) {
+                throw new InvalidEntityException("Entity is not an instance of Task.");
+            }
+            Task task = (Task) entity;
+            getTaskById(task.id);
+        }
+    }
 }

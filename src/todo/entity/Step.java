@@ -3,12 +3,6 @@ package todo.entity;
 import db.*;
 
 public class Step extends Entity {
-    public Step(String title, Task.Status status, int taskRef) {
-        this.title = title;
-        this.status = status;
-        this.taskRef = taskRef;
-    }
-
     @Override
     public Entity copy() {
         return null;
@@ -27,4 +21,10 @@ public class Step extends Entity {
     public String title;
     public Task.Status status;
     public int taskRef;
+
+    public Step(String title, Task.Status status, int taskRef) {
+        this.title = title;
+        this.status = status;
+        this.taskRef = taskRef;
+    }
 }

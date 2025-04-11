@@ -45,4 +45,10 @@ public class Task extends Entity implements Trackable {
     public String description;
     public Date dueDate;
     public Status status;
+
+    public Task(String title, String description, Date dueDate) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+    }
 }

@@ -1,5 +1,6 @@
 package todo.service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -81,6 +82,29 @@ public class TaskService {
         for (Entity entity : allSteps) {
             Step step = (Step) entity;
             StepService.setAsCompleted(step.id);
+        }
+    }
+
+    public static void getTaskById(int taskId) throws InvalidEntityException {
+        Entity entity = Database.get(taskId);
+        if (!(entity instanceof Task)) {
+            throw new InvalidEntityException("Entity is not an instance of Task.");
+        }
+        Task task = (Task) entity;
+
+        ArrayList<Entity> taskSteps = Database.getAll(task.id);
+
+        System.out.println("ID: " + task.id +"\n" +
+                "Title: " + task.title + "\n" +
+                "Due Date: " + task.dueDate + "\n" +
+                "Status: " + task.status + "\n" +
+                "Steps:");
+
+        for (Entity e : taskSteps) {
+            Step step = (Step) entity;
+            System.out.println("    + " + step.title + ":\n" +
+                    "        ID: " + step.id + "\n" +
+                    "        Status: " + step.status);
         }
     }
 }

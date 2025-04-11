@@ -81,4 +81,18 @@ public class Database {
 
         validators.put(entityCode, validator);
     }
+
+    public static ArrayList<Entity> getAll(int entityCode) throws EntityNotFoundException {
+        ArrayList<Entity> returnedEntities = new ArrayList<>();
+        for (Entity entity : entities) {
+            if (entity.getEntityCode() == entityCode) {
+                returnedEntities.add(entity);
+            }
+        }
+
+        if (returnedEntities == null) {
+            throw new EntityNotFoundException("No entities found with the given code.");
+        }
+        return returnedEntities;
+    }
 }

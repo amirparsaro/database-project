@@ -94,7 +94,7 @@ public class TaskService {
 
         ArrayList<Entity> taskSteps = Database.getAll(task.id);
 
-        System.out.println("ID: " + task.id +"\n" +
+        System.out.println("ID: " + task.id + "\n" +
                 "Title: " + task.title + "\n" +
                 "Due Date: " + task.dueDate + "\n" +
                 "Status: " + task.status + "\n" +
@@ -118,6 +118,27 @@ public class TaskService {
             }
             Task task = (Task) entity;
             getTaskById(task.id);
+        }
+    }
+
+    public static void getIncompleteTasks() throws InvalidEntityException {
+        Task taskUsedForId = new Task();
+        ArrayList<Entity> allTasks = Database.getAll(taskUsedForId.getEntityCode());
+
+        for (Entity entity : allTasks) {
+            int amount = 0;
+            if (!(entity instanceof Task)) {
+                throw new InvalidEntityException("Entity is not an instance of Task.");
+            }
+            Task task = (Task) entity;
+            if (task.status.equals(Task.Status.NotStarted) || task.status.equals(Task.Status.InProgress)) {
+                getTaskById(task.id);
+                amount++;
+            }
+
+            if (amount == 0) {
+                System.out.println("No incomplete tasks to show. You are good to go!");
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ import todo.validator.TaskValidator;
 import javax.xml.crypto.Data;
 
 public class TaskService {
-    public static void setAsCompleted(int taskId) throws InvalidEntityException {
+    public static void setAsCompleted(int taskId) throws InvalidEntityException, EntityNotFoundException {
         Entity entity = Database.get(taskId);
         if (!(entity instanceof Task)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -67,6 +67,8 @@ public class TaskService {
             oldValue = String.valueOf(task.status);
             if (newValue.equals("NotStarted")) {
                 task.status = Task.Status.NotStarted;
+            } else if (newValue.equals("InProgress")) {
+                task.status = Task.Status.InProgress;
             } else if (newValue.equals("Completed")) {
                 task.status = Task.Status.Completed;
 
@@ -83,7 +85,7 @@ public class TaskService {
         return oldValue;
     }
 
-    private static void setStepsAsComplete(int taskId) throws InvalidEntityException {
+    private static void setStepsAsComplete(int taskId) throws InvalidEntityException, EntityNotFoundException {
         ArrayList<Entity> allSteps = Database.getAll(taskId);
         for (Entity entity : allSteps) {
             Step step = (Step) entity;
@@ -91,7 +93,7 @@ public class TaskService {
         }
     }
 
-    public static void getTaskById(int taskId) throws InvalidEntityException {
+    public static void getTaskById(int taskId) throws InvalidEntityException, EntityNotFoundException {
         Entity entity = Database.get(taskId);
         if (!(entity instanceof Task)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -102,10 +104,12 @@ public class TaskService {
 
         System.out.println("ID: " + task.id + "\n" +
                 "Title: " + task.title + "\n" +
+                "Description: " + task.description + "\n" +
                 "Due Date: " + task.dueDate + "\n" +
                 "Status: " + task.status + "\n" +
                 "Steps:");
 
+        boolean hasEntityToShow = false;
         for (Entity e : taskSteps) {
             Step step;
             if (e instanceof Step) {
@@ -113,14 +117,23 @@ public class TaskService {
                 System.out.println("    + " + step.title + ":\n" +
                         "        ID: " + step.id + "\n" +
                         "        Status: " + step.status);
+                hasEntityToShow = true;
             }
+        }
+
+        if (!hasEntityToShow) {
+            System.out.println("    No steps for this task. Create some by using \"add step\".");
         }
     }
 
-    public static void getAllTasks() throws InvalidEntityException {
+    public static void getAllTasks() throws InvalidEntityException, EntityNotFoundException {
         Task taskUsedForId = new Task();
         ArrayList<Entity> allTasks = Database.getAll(taskUsedForId.getEntityCode());
 
+        if (allTasks.isEmpty()) {
+            System.out.println("No tasks to show in here! Create some using \"add task\".");
+            return;
+        }
         for (Entity entity : allTasks) {
             if (!(entity instanceof Task)) {
                 throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -130,23 +143,40 @@ public class TaskService {
         }
     }
 
-    public static void getIncompleteTasks() throws InvalidEntityException {
+    public static void getIncompleteTasks() throws InvalidEntityException, EntityNotFoundException {
         Task taskUsedForId = new Task();
         ArrayList<Entity> allTasks = Database.getAll(taskUsedForId.getEntityCode());
 
+        boolean hasEntityToShow = false;
         for (Entity entity : allTasks) {
-            int amount = 0;
             if (!(entity instanceof Task)) {
                 throw new InvalidEntityException("Entity is not an instance of Task.");
             }
             Task task = (Task) entity;
             if (task.status.equals(Task.Status.NotStarted) || task.status.equals(Task.Status.InProgress)) {
                 getTaskById(task.id);
-                amount++;
+                hasEntityToShow = true;
             }
+        }
 
-            if (amount == 0) {
-                System.out.println("No incomplete tasks to show. You are good to go!");
+        if (!hasEntityToShow) {
+            System.out.println("No incomplete tasks to show. You are good to go!");
+        }
+    }
+
+    public static void checkForTaskDeletion(int entityId) throws EntityNotFoundException {
+        Task taskForEntityCode = new Task();
+        ArrayList<Entity> allTasks = Database.getAll(taskForEntityCode.getEntityCode());
+
+        for (Entity e : allTasks) {
+            if (e instanceof Task) {
+                Task task = (Task) e;
+                if (task.id == entityId) {
+                    ArrayList<Entity> allSteps = Database.getAll(task.id);
+                    for (Entity entity : allSteps) {
+                        Database.delete(entity.id);
+                    }
+                }
             }
         }
     }

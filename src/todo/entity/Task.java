@@ -5,6 +5,8 @@ import db.*;
 import java.util.Date;
 
 public class Task extends Entity implements Trackable {
+    private static final int ENTITY_TASK_ID = 1;
+
     @Override
     public Entity copy() {
         return null;
@@ -12,7 +14,7 @@ public class Task extends Entity implements Trackable {
 
     @Override
     public int getEntityCode() {
-        return 0;
+        return ENTITY_TASK_ID;
     }
 
     @Override
@@ -46,9 +48,14 @@ public class Task extends Entity implements Trackable {
     public Date dueDate;
     public Status status;
 
-    public Task(String title, String description, Date dueDate) {
+    public Task() {
+
+    }
+
+    public Task(String title, String description, Date dueDate, Status status) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
+        this.status = status;
     }
 }

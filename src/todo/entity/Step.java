@@ -10,19 +10,19 @@ public class Step extends Entity {
 
     @Override
     public int getEntityCode() {
-        return 0;
+        return taskRef;
     }
 
-    enum Status {
+    public enum Status {
         NotStarted,
         Completed
     }
 
     public String title;
-    public Task.Status status;
+    public Status status;
     public int taskRef;
 
-    public Step(String title, Task.Status status, int taskRef) {
+    public Step(String title, Status status, int taskRef) {
         this.title = title;
         this.status = status;
         this.taskRef = taskRef;

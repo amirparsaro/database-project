@@ -38,7 +38,9 @@ public class Main {
                     String dueDate = scanner.nextLine();
 
                     try {
-                        TaskService.addTask(title, description, dueDate);
+                        int taskId = TaskService.addTask(title, description, dueDate);
+                        System.out.println("Task saved successfully.\n" +
+                                "ID: " + taskId);
                     } catch (InvalidEntityException e) {
                         System.out.println("Cannot save step.\n" +
                                 "[Error] " + e.getMessage());
@@ -51,10 +53,10 @@ public class Main {
                     String title = scanner.nextLine();
 
                     try {
-                        StepService.saveStep(taskId, title);
+                        int stepId = StepService.saveStep(taskId, title);
                         Date taskDate = new Date();
                         System.out.println("Step saved successfully.\n" +
-                                "ID: " + taskId + "\n" +
+                                "ID: " + stepId + "\n" +
                                 "Creation Date: " + taskDate);
                     } catch (InvalidEntityException e) {
                         System.out.println("Cannot save step.\n" +
@@ -85,7 +87,7 @@ public class Main {
                 if (splitInput[1].equals("task")) {
                     System.out.print("ID: ");
                     int taskId = Integer.parseInt(scanner.nextLine());
-                    System.out.print("Field (title, description, due-date): ");
+                    System.out.print("Field (title, description, due-date, status): ");
                     String field = scanner.nextLine();
                     System.out.print("New Value (if it's status, use: NotStarted, InProgress, Completed): ");
                     String newValue = scanner.nextLine();
@@ -95,7 +97,7 @@ public class Main {
                         Date now = new Date();
                         System.out.println("Successfully updated the task.\n" +
                                 "Field: " + field + "\n" +
-                                "Old Value: "+ oldValue + "\n" +
+                                "Old Value: " + oldValue + "\n" +
                                 "New Value:" + newValue + "\n" +
                                 "Modification Date: " + now);
                     } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
@@ -116,14 +118,16 @@ public class Main {
                         Date now = new Date();
                         System.out.println("Successfully updated the step.\n" +
                                 "Field: " + field + "\n" +
-                                "Old Value: "+ oldValue + "\n" +
+                                "Old Value: " + oldValue + "\n" +
                                 "New Value:" + newValue + "\n" +
                                 "Modification Date: " + now);
                     } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
                         System.out.println("Cannot update step with ID = " + stepId);
                         System.out.println("[Error] " + e.getMessage());
                     }
-                }
+                } else {
+                System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
+            }
 
 
             } else if (input.startsWith("get")) {
@@ -152,6 +156,8 @@ public class Main {
                     } catch (InvalidEntityException e) {
                         System.out.println("There was a problem with getting tasks. Try again.");
                     }
+                } else {
+                    System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
                 }
             }
 

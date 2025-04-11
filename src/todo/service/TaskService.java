@@ -6,15 +6,18 @@ import java.util.Date;
 
 import db.Database;
 import db.Entity;
+import db.Validator;
 import db.exception.EntityNotFoundException;
 import db.exception.InvalidEntityException;
 import todo.entity.Step;
 import todo.entity.Task;
+import todo.validator.StepValidator;
+import todo.validator.TaskValidator;
 
 import javax.xml.crypto.Data;
 
 public class TaskService {
-    public static void setAsCompleted(int taskId) throws InvalidEntityException { ////
+    public static void setAsCompleted(int taskId) throws InvalidEntityException {
         Entity entity = Database.get(taskId);
         if (!(entity instanceof Task)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -26,13 +29,16 @@ public class TaskService {
         Database.update(task);
     }
 
-    public static void addTask(String title, String description, String due) throws InvalidEntityException {
+    public static int addTask(String title, String description, String due) throws InvalidEntityException {
         String[] splitDueDate = due.split("-");
         Date dueDate = new Date(Integer.parseInt(splitDueDate[0]) - 1900, Integer.parseInt(splitDueDate[1]) - 1,
                 Integer.parseInt(splitDueDate[2]));
 
         Task task = new Task(title, description, dueDate, Task.Status.NotStarted);
         Database.add(task);
+
+        Database.registerValidator(task.id, new StepValidator());
+        return task.id;
     }
 
     public static String updateTask(int taskId, String field, String newValue)
@@ -101,10 +107,13 @@ public class TaskService {
                 "Steps:");
 
         for (Entity e : taskSteps) {
-            Step step = (Step) entity;
-            System.out.println("    + " + step.title + ":\n" +
-                    "        ID: " + step.id + "\n" +
-                    "        Status: " + step.status);
+            Step step;
+            if (e instanceof Step) {
+                step = (Step) e;
+                System.out.println("    + " + step.title + ":\n" +
+                        "        ID: " + step.id + "\n" +
+                        "        Status: " + step.status);
+            }
         }
     }
 
@@ -140,5 +149,10 @@ public class TaskService {
                 System.out.println("No incomplete tasks to show. You are good to go!");
             }
         }
+    }
+
+    static {
+        Task taskForEntityCode = new Task();
+        Database.registerValidator(taskForEntityCode.getEntityCode(), new TaskValidator());
     }
 }

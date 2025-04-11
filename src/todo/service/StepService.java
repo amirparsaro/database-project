@@ -24,7 +24,7 @@ public class StepService {
 
     }
 
-    public static void saveStep(int taskRef, String title) throws InvalidEntityException {
+    public static int saveStep(int taskRef, String title) throws InvalidEntityException {
         Entity entity = Database.get(taskRef);
         if (!(entity instanceof Task)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -33,7 +33,7 @@ public class StepService {
         Step newStep = new Step(title, Step.Status.NotStarted, taskRef);
 
         Database.add(newStep);
-
+        return newStep.id;
     }
 
     public static String updateStep(int stepId, String field, String newValue)

@@ -1,5 +1,6 @@
 package todo.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import db.Database;
@@ -9,8 +10,10 @@ import db.exception.InvalidEntityException;
 import todo.entity.Step;
 import todo.entity.Task;
 
+import javax.xml.crypto.Data;
+
 public class TaskService {
-    public static void setAsCompleted(int taskId) throws InvalidEntityException {
+    public static void setAsCompleted(int taskId) throws InvalidEntityException { ////
         Entity entity = Database.get(taskId);
         if (!(entity instanceof Task)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -55,11 +58,12 @@ public class TaskService {
             task.dueDate = dueDate;
         } else if (field.equals("status")) {
             oldValue = String.valueOf(task.status);
-
             if (newValue.equals("NotStarted")) {
                 task.status = Task.Status.NotStarted;
             } else if (newValue.equals("Completed")) {
                 task.status = Task.Status.Completed;
+
+                setStepsAsComplete(task.id);
             } else {
                 throw new IllegalArgumentException("Unknown status detected.");
             }
@@ -70,5 +74,13 @@ public class TaskService {
         Database.update(task);
 
         return oldValue;
+    }
+
+    private static void setStepsAsComplete(int taskId) throws InvalidEntityException {
+        ArrayList<Entity> allSteps = Database.getAll(taskId);
+        for (Entity entity : allSteps) {
+            Step step = (Step) entity;
+            StepService.setAsCompleted(step.id);
+        }
     }
 }

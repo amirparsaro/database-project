@@ -61,6 +61,8 @@ public class Main {
                     } catch (InvalidEntityException e) {
                         System.out.println("Cannot save step.\n" +
                                 "[Error] " + e.getMessage());
+                    } catch (EntityNotFoundException e) {
+                        System.out.println("[Error] " + e.getMessage());
                     }
 
                 } else {
@@ -73,6 +75,7 @@ public class Main {
                 int entityId = Integer.parseInt(scanner.nextLine());
 
                 try {
+                    TaskService.checkForTaskDeletion(entityId);
                     Database.delete(entityId);
                     System.out.println("Entity with ID = " + entityId + " successfully deleted.");
                 } catch (EntityNotFoundException e) {
@@ -98,7 +101,7 @@ public class Main {
                         System.out.println("Successfully updated the task.\n" +
                                 "Field: " + field + "\n" +
                                 "Old Value: " + oldValue + "\n" +
-                                "New Value:" + newValue + "\n" +
+                                "New Value: " + newValue + "\n" +
                                 "Modification Date: " + now);
                     } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
                         System.out.println("Cannot update task with ID = " + taskId);
@@ -126,8 +129,8 @@ public class Main {
                         System.out.println("[Error] " + e.getMessage());
                     }
                 } else {
-                System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
-            }
+                    System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
+                }
 
 
             } else if (input.startsWith("get")) {
@@ -152,13 +155,15 @@ public class Main {
 
                 } else if (splitInput[1].equals("incomplete-tasks")) {
                     try {
-                        TaskService.getAllTasks();
+                        TaskService.getIncompleteTasks();
                     } catch (InvalidEntityException e) {
                         System.out.println("There was a problem with getting tasks. Try again.");
                     }
                 } else {
                     System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
                 }
+            } else {
+                System.out.println("[Error] Invalid input. Use \"help\" if you are stuck.");
             }
 
             input = scanner.nextLine();

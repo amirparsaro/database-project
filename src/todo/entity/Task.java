@@ -5,7 +5,7 @@ import db.*;
 import java.util.Date;
 
 public class Task extends Entity implements Trackable {
-    private static final int ENTITY_TASK_ID = 1001;
+    private static final int ENTITY_TASK_ID = -1;
 
     @Override
     public Entity copy() {

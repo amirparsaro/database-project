@@ -7,6 +7,7 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class Database {
     private static ArrayList<Entity> entities = new ArrayList<>();
@@ -38,10 +39,20 @@ public class Database {
 
     public static void delete(int id) throws EntityNotFoundException {
         boolean entityFound = false;
-        for (Entity e : entities) {
+        Iterator<Entity> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            Entity e = iterator.next();
             if (e.id == id) {
-                entities.remove(e);
+                iterator.remove();
                 entityFound = true;
+            }
+        }
+
+        Iterator<Integer> validatorIterator = validators.keySet().iterator();
+        while (validatorIterator.hasNext()) {
+            int key = validatorIterator.next();
+            if (key == id) {
+                validatorIterator.remove();
             }
         }
 
@@ -67,7 +78,6 @@ public class Database {
             }
         }
 
-        System.out.println(entityFound);
         if (!entityFound) {
             throw new EntityNotFoundException(e.id);
         }

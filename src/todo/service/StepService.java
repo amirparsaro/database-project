@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class StepService {
-    public static void setAsCompleted(int stepId) throws InvalidEntityException {
-        Entity entity = Database.get(stepId); //////////
+    public static void setAsCompleted(int stepId) throws InvalidEntityException, EntityNotFoundException {
+        Entity entity = Database.get(stepId);
         if (!(entity instanceof Step)) {
             throw new InvalidEntityException("Entity is not an instance of Step.");
         }
@@ -24,7 +24,7 @@ public class StepService {
 
     }
 
-    public static int saveStep(int taskRef, String title) throws InvalidEntityException {
+    public static int saveStep(int taskRef, String title) throws InvalidEntityException, EntityNotFoundException {
         Entity entity = Database.get(taskRef);
         if (!(entity instanceof Task)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -41,7 +41,7 @@ public class StepService {
         String oldValue = "";
 
         Entity entity = Database.get(stepId);
-        if (!(entity instanceof Task)) {
+        if (!(entity instanceof Step)) {
             throw new InvalidEntityException("Entity is not an instance of Task.");
         }
         Step step = (Step) entity;
@@ -56,6 +56,7 @@ public class StepService {
                 step.status = Step.Status.NotStarted;
             } else if (newValue.equals("Completed")) {
                 step.status = Step.Status.Completed;
+                Database.update(step);
                 Entity taskEntity = Database.get(step.taskRef);
                 if (!(taskEntity instanceof Task)) {
                     throw new InvalidEntityException("Entity is not an instance of Task.");
@@ -74,7 +75,7 @@ public class StepService {
         return oldValue;
     }
 
-    private static void changeTaskState (int stepId) throws InvalidEntityException {
+    private static void changeTaskState (int stepId) throws InvalidEntityException, EntityNotFoundException {
         Entity entity = Database.get(stepId);
         if (!(entity instanceof Step)) {
             throw new InvalidEntityException("Entity is not an instance of Step.");
@@ -94,7 +95,7 @@ public class StepService {
 
         Task task = (Task) Database.get(step.taskRef);
         if (i == count) {
-            TaskService.setAsCompleted(step.taskRef); ////
+            TaskService.setAsCompleted(step.taskRef);
         } else if (count >= 1 && task.status.equals(Task.Status.NotStarted)) {
             task.status = Task.Status.InProgress;
             Database.update(task);

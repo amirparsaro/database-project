@@ -6,6 +6,7 @@ import db.Database;
 import db.Entity;
 import db.exception.EntityNotFoundException;
 import db.exception.InvalidEntityException;
+import todo.entity.Step;
 import todo.entity.Task;
 
 public class TaskService {
@@ -19,7 +20,6 @@ public class TaskService {
         task.status = Task.Status.Completed;
 
         Database.update(task);
-
     }
 
     public static void addTask(String title, String description, String due) throws InvalidEntityException {
@@ -31,23 +31,44 @@ public class TaskService {
         Database.add(task);
     }
 
-    public static void updateTask(int taskId, String field, String newValue)
+    public static String updateTask(int taskId, String field, String newValue)
             throws InvalidEntityException, EntityNotFoundException, IllegalArgumentException {
-        Task task = (Task) Database.get(taskId);
+        String oldValue = "";
+
+        Entity entity = Database.get(taskId);
+        if (!(entity instanceof Task)) {
+            throw new InvalidEntityException("Entity is not an instance of Task.");
+        }
+        Task task = (Task) entity;
 
         if (field.equals("title")) {
+            oldValue = task.title;
             task.title = newValue;
         } else if (field.equals("description")) {
+            oldValue = task.description;
             task.description = newValue;
         } else if (field.equals("due-date")) {
+            oldValue = String.valueOf(task.dueDate);
             String[] splitDueDate = newValue.split("-");
             Date dueDate = new Date(Integer.parseInt(splitDueDate[0]) - 1900, Integer.parseInt(splitDueDate[1]) - 1,
                     Integer.parseInt(splitDueDate[2]));
             task.dueDate = dueDate;
+        } else if (field.equals("status")) {
+            oldValue = String.valueOf(task.status);
+
+            if (newValue.equals("NotStarted")) {
+                task.status = Task.Status.NotStarted;
+            } else if (newValue.equals("Completed")) {
+                task.status = Task.Status.Completed;
+            } else {
+                throw new IllegalArgumentException("Unknown status detected.");
+            }
         } else {
             throw new IllegalArgumentException("Unknown field detected.");
         }
 
         Database.update(task);
+
+        return oldValue;
     }
 }

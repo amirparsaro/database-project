@@ -1,5 +1,6 @@
 package todo.service;
 
+import java.util.Date;
 import db.Database;
 import db.Entity;
 import db.exception.InvalidEntityException;
@@ -17,6 +18,19 @@ public class TaskService {
 
         try {
             Database.update(task);
+        } catch (InvalidEntityException e) {
+            System.out.println("[Error] Entity is invalid. Check for any wrong input.");
+        }
+    }
+
+    public static void addTask(String title, String description, String due) {
+        String[] splitDueDate = due.split("-");
+        Date dueDate = new Date(Integer.parseInt(splitDueDate[0]), Integer.parseInt(splitDueDate[1]),
+                Integer.parseInt(splitDueDate[2]));
+
+        Task task = new Task(title, description, dueDate);
+        try {
+            Database.add(task);
         } catch (InvalidEntityException e) {
             System.out.println("[Error] Entity is invalid. Check for any wrong input.");
         }

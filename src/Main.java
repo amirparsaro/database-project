@@ -1,10 +1,5 @@
-import java.util.Date;
 import java.util.Scanner;
 
-import db.Database;
-import db.exception.EntityNotFoundException;
-import db.exception.InvalidEntityException;
-import todo.entity.Step;
 import todo.service.*;
 
 public class Main {
@@ -25,147 +20,45 @@ public class Main {
                         "\"help\": print this list of commands\n" +
                         "\"exit\": exit the program.\n");
 
-
             } else if (input.startsWith("add")) {
                 String[] splitInput = input.split(" ");
-
                 if (splitInput[1].equals("task")) {
-                    System.out.print("Title: ");
-                    String title = scanner.nextLine();
-                    System.out.print("Description: ");
-                    String description = scanner.nextLine();
-                    System.out.print("Due date: ");
-                    String dueDate = scanner.nextLine();
-
-                    try {
-                        int taskId = TaskService.addTask(title, description, dueDate);
-                        System.out.println("Task saved successfully.\n" +
-                                "ID: " + taskId);
-                    } catch (InvalidEntityException e) {
-                        System.out.println("Cannot save step.\n" +
-                                "[Error] " + e.getMessage());
-                    }
-
+                    TaskService.addTask();
                 } else if (splitInput[1].equals("step")) {
-                    System.out.print("TaskID: ");
-                    int taskId = Integer.parseInt(scanner.nextLine());
-                    System.out.print("Title: ");
-                    String title = scanner.nextLine();
-
-                    try {
-                        int stepId = StepService.saveStep(taskId, title);
-                        Date taskDate = new Date();
-                        System.out.println("Step saved successfully.\n" +
-                                "ID: " + stepId + "\n" +
-                                "Creation Date: " + taskDate);
-                    } catch (InvalidEntityException e) {
-                        System.out.println("Cannot save step.\n" +
-                                "[Error] " + e.getMessage());
-                    } catch (EntityNotFoundException e) {
-                        System.out.println("[Error] " + e.getMessage());
-                    }
-
+                    StepService.addStep();
                 } else {
                     System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
                 }
 
-
             } else if (input.equals("delete")) {
-                System.out.print("ID: ");
-                int entityId = Integer.parseInt(scanner.nextLine());
-
-                try {
-                    TaskService.checkForTaskDeletion(entityId);
-                    Database.delete(entityId);
-                    System.out.println("Entity with ID = " + entityId + " successfully deleted.");
-                } catch (EntityNotFoundException e) {
-                    System.out.println("Cannot delete entity with ID = " + entityId + ".\n" +
-                            "[Error] " + e.getMessage());
-                }
-
+                TaskService.delete();
 
             } else if (input.startsWith("update")) {
                 String[] splitInput = input.split(" ");
-
                 if (splitInput[1].equals("task")) {
-                    System.out.print("ID: ");
-                    int taskId = Integer.parseInt(scanner.nextLine());
-                    System.out.print("Field (title, description, due-date, status): ");
-                    String field = scanner.nextLine();
-                    System.out.print("New Value (if it's status, use: NotStarted, InProgress, Completed): ");
-                    String newValue = scanner.nextLine();
-
-                    try {
-                        String oldValue = TaskService.updateTask(taskId, field, newValue);
-                        Date now = new Date();
-                        System.out.println("Successfully updated the task.\n" +
-                                "Field: " + field + "\n" +
-                                "Old Value: " + oldValue + "\n" +
-                                "New Value: " + newValue + "\n" +
-                                "Modification Date: " + now);
-                    } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
-                        System.out.println("Cannot update task with ID = " + taskId);
-                        System.out.println("[Error] " + e.getMessage());
-                    }
-
+                    TaskService.updateTask();
                 } else if (splitInput[1].equals("step")) {
-                    System.out.print("ID: ");
-                    int stepId = Integer.parseInt(scanner.nextLine());
-                    System.out.print("Field (title, status): ");
-                    String field = scanner.nextLine();
-                    System.out.print("New Value (if it's status, use: NotStarted, Completed): ");
-                    String newValue = scanner.nextLine();
-
-                    try {
-                        String oldValue = StepService.updateStep(stepId, field, newValue);
-                        Date now = new Date();
-                        System.out.println("Successfully updated the step.\n" +
-                                "Field: " + field + "\n" +
-                                "Old Value: " + oldValue + "\n" +
-                                "New Value:" + newValue + "\n" +
-                                "Modification Date: " + now);
-                    } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
-                        System.out.println("Cannot update step with ID = " + stepId);
-                        System.out.println("[Error] " + e.getMessage());
-                    }
+                    StepService.updateStep();
                 } else {
                     System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
                 }
-
 
             } else if (input.startsWith("get")) {
                 String[] splitInput = input.split(" ");
 
                 if (splitInput[1].equals("task-by-id")) {
-                    System.out.print("ID: ");
-                    int taskId = Integer.parseInt(scanner.nextLine());
-
-                    try {
-                        TaskService.getTaskById(taskId);
-                    } catch (InvalidEntityException e) {
-                        System.out.println("Cannot find task with ID = " + taskId);
-                    }
-
+                    TaskService.getTask();
                 } else if (splitInput[1].equals("all-tasks")) {
-                    try {
-                        TaskService.getAllTasks();
-                    } catch (InvalidEntityException e) {
-                        System.out.println("There was a problem with getting tasks. Try again.");
-                    }
-
+                    TaskService.getAll();
                 } else if (splitInput[1].equals("incomplete-tasks")) {
-                    try {
-                        TaskService.getIncompleteTasks();
-                    } catch (InvalidEntityException e) {
-                        System.out.println("There was a problem with getting tasks. Try again.");
-                    }
+                    TaskService.getIncomplete();
                 } else {
                     System.out.println("[Error] invalid input: \"" + splitInput[1] + "\".Try again.");
                 }
+
             } else {
                 System.out.println("[Error] Invalid input. Use \"help\" if you are stuck.");
             }
-
             input = scanner.nextLine();
         }
     }

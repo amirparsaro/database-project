@@ -9,8 +9,10 @@ import todo.entity.Task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 public class StepService {
+    static Scanner scanner = new Scanner(System.in);
     public static void setAsCompleted(int stepId) throws InvalidEntityException, EntityNotFoundException {
         Entity entity = Database.get(stepId);
         if (!(entity instanceof Step)) {
@@ -99,6 +101,48 @@ public class StepService {
         } else if (count >= 1 && task.status.equals(Task.Status.NotStarted)) {
             task.status = Task.Status.InProgress;
             Database.update(task);
+        }
+    }
+
+    public static void addStep() {
+        System.out.print("TaskID: ");
+        int taskId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Title: ");
+        String title = scanner.nextLine();
+
+        try {
+            int stepId = StepService.saveStep(taskId, title);
+            Date taskDate = new Date();
+            System.out.println("Step saved successfully.\n" +
+                    "ID: " + stepId + "\n" +
+                    "Creation Date: " + taskDate);
+        } catch (InvalidEntityException e) {
+            System.out.println("Cannot save step.\n" +
+                    "[Error] " + e.getMessage());
+        } catch (EntityNotFoundException e) {
+            System.out.println("[Error] " + e.getMessage());
+        }
+    }
+
+    public static void updateStep() {
+        System.out.print("ID: ");
+        int stepId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Field (title, status): ");
+        String field = scanner.nextLine();
+        System.out.print("New Value (if it's status, use: NotStarted, Completed): ");
+        String newValue = scanner.nextLine();
+
+        try {
+            String oldValue = StepService.updateStep(stepId, field, newValue);
+            Date now = new Date();
+            System.out.println("Successfully updated the step.\n" +
+                    "Field: " + field + "\n" +
+                    "Old Value: " + oldValue + "\n" +
+                    "New Value:" + newValue + "\n" +
+                    "Modification Date: " + now);
+        } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
+            System.out.println("Cannot update step with ID = " + stepId);
+            System.out.println("[Error] " + e.getMessage());
         }
     }
 }

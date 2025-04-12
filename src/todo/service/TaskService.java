@@ -3,6 +3,7 @@ package todo.service;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 import db.Database;
 import db.Entity;
@@ -17,6 +18,7 @@ import todo.validator.TaskValidator;
 import javax.xml.crypto.Data;
 
 public class TaskService {
+    static Scanner scanner = new Scanner(System.in);
     public static void setAsCompleted(int taskId) throws InvalidEntityException, EntityNotFoundException {
         Entity entity = Database.get(taskId);
         if (!(entity instanceof Task)) {
@@ -178,6 +180,87 @@ public class TaskService {
                     }
                 }
             }
+        }
+    }
+
+    public static void addTask() {
+        System.out.print("Title: ");
+        String title = scanner.nextLine();
+        System.out.print("Description: ");
+        String description = scanner.nextLine();
+        System.out.print("Due date: ");
+        String dueDate = scanner.nextLine();
+
+        try {
+            int taskId = TaskService.addTask(title, description, dueDate);
+            System.out.println("Task saved successfully.\n" +
+                    "ID: " + taskId);
+        } catch (InvalidEntityException e) {
+            System.out.println("Cannot save step.\n" +
+                    "[Error] " + e.getMessage());
+        }
+    }
+
+    public static void delete() {
+        System.out.print("ID: ");
+        int entityId = Integer.parseInt(scanner.nextLine());
+
+        try {
+            TaskService.checkForTaskDeletion(entityId);
+            Database.delete(entityId);
+            System.out.println("Entity with ID = " + entityId + " successfully deleted.");
+        } catch (EntityNotFoundException e) {
+            System.out.println("Cannot delete entity with ID = " + entityId + ".\n" +
+                    "[Error] " + e.getMessage());
+        }
+    }
+
+    public static void updateTask() {
+        System.out.print("ID: ");
+        int taskId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Field (title, description, due-date, status): ");
+        String field = scanner.nextLine();
+        System.out.print("New Value (if it's status, use: NotStarted, InProgress, Completed): ");
+        String newValue = scanner.nextLine();
+
+        try {
+            String oldValue = TaskService.updateTask(taskId, field, newValue);
+            Date now = new Date();
+            System.out.println("Successfully updated the task.\n" +
+                    "Field: " + field + "\n" +
+                    "Old Value: " + oldValue + "\n" +
+                    "New Value: " + newValue + "\n" +
+                    "Modification Date: " + now);
+        } catch (InvalidEntityException | EntityNotFoundException | IllegalArgumentException e) {
+            System.out.println("Cannot update task with ID = " + taskId);
+            System.out.println("[Error] " + e.getMessage());
+        }
+    }
+
+    public static void getTask() {
+        System.out.print("ID: ");
+        int taskId = Integer.parseInt(scanner.nextLine());
+
+        try {
+            TaskService.getTaskById(taskId);
+        } catch (InvalidEntityException e) {
+            System.out.println("Cannot find task with ID = " + taskId);
+        }
+    }
+
+    public static void getAll() {
+        try {
+            TaskService.getAllTasks();
+        } catch (InvalidEntityException e) {
+            System.out.println("There was a problem with getting tasks. Try again.");
+        }
+    }
+
+    public static void getIncomplete() {
+        try {
+            TaskService.getIncompleteTasks();
+        } catch (InvalidEntityException e) {
+            System.out.println("There was a problem with getting tasks. Try again.");
         }
     }
 
